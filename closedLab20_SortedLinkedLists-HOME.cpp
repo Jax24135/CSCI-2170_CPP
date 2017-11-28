@@ -41,7 +41,8 @@ int main() {
     // call function "DestroyList" here
     DestroyList(head);
 
-return 0; }
+return 0;
+}
 
 // define the function "BuildSortedList" below
 // Write a "while" loop to read position-item pairs from the data file.
