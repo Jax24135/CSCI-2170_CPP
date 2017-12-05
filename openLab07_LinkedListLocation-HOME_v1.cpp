@@ -16,6 +16,8 @@ typedef Node * NodePtr;
 
 void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length);
 void PrintList(NodePtr &head);
+void PrintLocation(const NodePtr &head,const int loc,const int length);
+
 
 int main() {
     
@@ -36,6 +38,12 @@ int main() {
         if (command == 'I') {
             myIn >> fruit >> loc;
             InsertByLocation(head, fruit, loc, length);
+        } else if (command == 'P') {
+            myIn >> loc;
+            PrintLocation(head, loc,length);
+            
+            
+            
         }
     }
     
@@ -52,16 +60,8 @@ void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length) {
     NodePtr newNode = new Node; // create new Node
     newNode->data = fruit;      // assign data to $fruit
     newNode->next  = NULL;      // set next to $NULL
-
-    length++;
     
-    // validate $loc
-    if (loc < 1 || length < loc) {
-        cerr << "something went wrong...\n";
-    
-    } else {
-    
-        // if the list is empty, make the newNode the head
+    // if the list is empty, make the newNode the head
     if (head == NULL) {
         head = curPtr = newNode;
     
@@ -73,10 +73,10 @@ void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length) {
             // while the end of list isn't reached && loc doesn't match current cell
             // traverse the list
             while(curPtr != NULL && loc != currLoc) {
-            prevPtr = curPtr;
-            curPtr = curPtr->next;
-            currLoc++;  // add 1 to keep track of which cell we're in
-        }
+                prevPtr = curPtr;
+                curPtr = curPtr->next;
+                currLoc++;  // add 1 to keep track of which cell we're in
+            }
         
         // if the 1st cell is the target location
         // move currentHEAD up 1 cell, relink head to ->next
@@ -95,12 +95,41 @@ void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length) {
             prevPtr->next = newNode;
             newNode->next = curPtr;
         }
-        
-    /*DEBUGGER::*/ PrintList(head);
-    /*DEBUGGER:*/ cout << endl << endl;
     }
-    }
+    //this should be right before this function ends//
+    //*DEBUGGER::*/ PrintList(head);
+    //*DEBUGGER:*/ cout << endl << endl;
 }
+
+void PrintLocation(const NodePtr &head,const int loc,const int length) {
+    NodePtr prevPtr, curPtr;
+    int finder = 1;
+    
+    if (head == NULL) {
+        cerr << "this list is empty.\n";
+    } else {
+        curPtr = head;
+        
+        // find the location to start printing from
+        while(curPtr != NULL && finder != loc) {
+            prevPtr = curPtr;
+            curPtr = curPtr->next;
+        }
+        
+        //starting printing items
+        cout << "The list is : ";
+        while(curPtr != NULL) {
+            cout << curPtr->data;
+            curPtr = curPtr->next;
+            
+            if (curPtr != NULL)
+                cout << "->";
+            
+        }
+    }
+    cout << endl;
+}
+
 
 
 void PrintList(NodePtr &head) {
