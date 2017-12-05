@@ -1,21 +1,8 @@
-/*
- * working on display
- * only printing last item in list
-
-*.dat
-I apple 1
-I pear 2
-I strawberry 1
-I peach 2
-I watermelon 3
-
-*/
-
-        
-        
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <cassert>
+#include <string>
+
 using namespace std;
 
 typedef string ItemType;
@@ -27,91 +14,100 @@ struct Node {
 
 typedef Node * NodePtr;
 
-void InsertByLocation(NodePtr &head,string fruit, int targetLoc, int &length);
-void PrintList(const NodePtr &head);
+void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length);
+void PrintList(NodePtr &head);
 
-int main()
-{
-
-    fstream myIn;
-    NodePtr head = NULL;        // create new list $head
-
-    char targetOp = 'n';         // target operation (Insert, Delete, Print, Retrieve)
-    string fruit = "None";
-    int targetLoc = -1;                // location
-    int length = 0;
+int main() {
     
+    fstream myIn;   // DATA file OBJECT
+    char command;   // type of operation to do
+    string fruit;   // holds new fruit names
+    int loc;        // location manipulation value
+    int length = 0; // length of the LList
     
+    NodePtr head = NULL;    // establish LList $head
     
+    //open data file
     myIn.open("linkedlist.dat");
     assert(myIn);
     
-    if(myIn >> targetOp) {
+    while(myIn >> command) {
         
-        
-        if (targetOp == 'I') {
-            fruit = "none"; // cleanse palette
-            targetLoc = -1; // cleanse palette
-            myIn >> fruit >> targetLoc;
-            InsertByLocation(head, fruit, targetLoc, length);
+        if (command == 'I') {
+            myIn >> fruit >> loc;
+            InsertByLocation(head, fruit, loc, length);
         }
-        
     }
     
-    myIn.close();
-    
-    
-    PrintList(head);
-    
+    //PrintList(head);
     
     return 0;
 }
 
-void InsertByLocation(NodePtr &head,string fruit, int targetLoc, int &length) {
+void InsertByLocation(NodePtr &head, ItemType fruit, int loc, int &length) {
     
-    NodePtr prevPtr, curPtr;
-    prevPtr = NULL;
+    NodePtr curPtr, prevPtr;    // setup 2 points for finding InsertionPt
+    int currLoc = 1;            // set curPos to 1 since SOMETHING will be the ListHEAD
     
-    NodePtr newNode = new Node;
-    newNode->data = fruit;
-    newNode->next = NULL;
-    
-    if (head == NULL || length == 0) {
-        head = curPtr = newNode;        // set $head && curPtr to 1st Node
-    } else {
-        
-        // if target insertion destination isn't valid.. quit loop
-        if (targetLoc < 1 || length < targetLoc) {
-            cerr << "hmm... that's an invalid location.\n";
-        } else {
- 
-            // otherwise, find the intedended
-            int counter = 1;
-            while (counter != targetLoc && targetLoc <= length) {    //
-                prevPtr = curPtr;
-                curPtr = curPtr->next;
-                counter++;
-            }
-        
-            // add newNode at intended location, between prevPtr && curPtr
-            newNode->next = curPtr;
-            prevPtr->next = newNode;
-        
-            prevPtr = NULL; // reset to default
-            curPtr = head;  // reset to default
+    NodePtr newNode = new Node; // create new Node
+    newNode->data = fruit;      // assign data to $fruit
+    newNode->next  = NULL;      // set next to $NULL
 
-        }
-    // either way, increase $length by +1
     length++;
+    
+    // validate $loc
+    if (loc < 1 || length < loc) {
+        cerr << "something went wrong...\n";
+    
+    } else {
+    
+        // if the list is empty, make the newNode the head
+    if (head == NULL) {
+        head = curPtr = newNode;
+    
+    //otherwise, Insert newNode somwhere in the list
+    } else {
+            curPtr = head;      // reset curPtr to the ListHead
+            prevPtr = NULL;     // reset to default placement
+        
+            // while the end of list isn't reached && loc doesn't match current cell
+            // traverse the list
+            while(curPtr != NULL && loc != currLoc) {
+            prevPtr = curPtr;
+            curPtr = curPtr->next;
+            currLoc++;  // add 1 to keep track of which cell we're in
+        }
+        
+        // if the 1st cell is the target location
+        // move currentHEAD up 1 cell, relink head to ->next
+        // and replace head with newNode
+        if(prevPtr == NULL) {
+            newNode->next = head;
+            head = newNode;
+        
+        // if the intended location isn't found by the end of the list
+        // add to the end of the List
+        } else if (curPtr == NULL) {
+                prevPtr->next = newNode;
+        
+        // otherwise, add in between 2 cell locations in the List
+        } else {
+            prevPtr->next = newNode;
+            newNode->next = curPtr;
+        }
+        
+    /*DEBUGGER::*/ PrintList(head);
+    /*DEBUGGER:*/ cout << endl << endl;
+    }
     }
 }
-    
-void PrintList(const NodePtr &head) {
-    
-    NodePtr tmpPtr = head;
-    
-    while (tmpPtr != NULL) {
-        cout << tmpPtr->data << endl;
-        tmpPtr = tmpPtr->next;
+
+
+void PrintList(NodePtr &head) {
+    NodePtr cur = head;
+    cout << "The list is: ";
+    while(cur != NULL) {
+        cout << cur->data << " -> ";
+        cur = cur->next;
     }
 }
