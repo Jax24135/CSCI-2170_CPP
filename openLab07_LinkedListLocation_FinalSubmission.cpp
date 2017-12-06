@@ -1,5 +1,7 @@
-/* asgn BY CSCI 2170-001, Due: Midnight, Wednesday, 12/06/2017
+/* asgn BY Jonathan Jackson,  CSCI 2170-001, Due: Midnight, Wednesday, 12/06/2017
  * PROGRAM ID:  linkedlistlocation.cpp / Linked List by Location
+ * AUTHOR:  Jonathan Jackson
+ * INSTALLATION:  MTSU
  * REMARKS:  This automated program reads in a DATA file and adds items
  * to a Linked List (hereby called "LList", ya know - less typing..)
  * 
@@ -31,7 +33,7 @@ void InsertByLocation(NodePtr &head, const ItemType &fruit, const int &loc, int 
 void RetrieveByLocation(const NodePtr &head,const int &loc, const int &length);
 void DeleteByLocation(NodePtr &head, const int &loc, int &length);
 void PrintLocation(const NodePtr &head, const int &loc,const int &length);
-void SeekAndDestroyList(NodePtr &head);
+void DestroyList(NodePtr &head);
 void PrintList(NodePtr &head);
 
 int main() {
@@ -84,16 +86,15 @@ int main() {
         } else {
             cerr << "uh.. I can't do that Dave.\n\n";
         }
-    
-    
     }
     
     myIn.close();   // close DATA file cleanly
     
-    SeekAndDestroyList(head);
+    DestroyList(head);
     return 0;       // exit program cleanly
 }
 
+// Insert new Item into the LList location, add 1 to length if successful
 void InsertByLocation(NodePtr &head, const ItemType &fruit,const int &loc, int &length) {
     
     NodePtr curPtr, prevPtr;    // setup 2 points for finding InsertionPt
@@ -143,6 +144,7 @@ void InsertByLocation(NodePtr &head, const ItemType &fruit,const int &loc, int &
     length++; // +1 to $length last
 }
 
+// Remove an Item from LList (based on location), delete 1 from $length if successful
 void DeleteByLocation(NodePtr &head, const int &loc, int &length) {
     
     NodePtr frontPtr, backPtr; // traverse the List
@@ -186,10 +188,11 @@ void DeleteByLocation(NodePtr &head, const int &loc, int &length) {
     length--;   // decrease $length by 1 last.
 }
 
+// Print 1 $item based on location in LList
 void RetrieveByLocation(const NodePtr &head,const int &loc, const int &length) {
     
-    NodePtr frontPtr, backPtr;
-    int curLoc;
+    NodePtr frontPtr, backPtr;      // NodePtrs to travel list or check for targetValue
+    int curLoc;                     // current location in Node #s
     
     // if list is empty, print ERROR message
     if (head == NULL) {
@@ -198,14 +201,14 @@ void RetrieveByLocation(const NodePtr &head,const int &loc, const int &length) {
     
     } else {
         curLoc = 1;         // set default location to 1
-        frontPtr = head;    // 
-        backPtr = NULL;
+        frontPtr = head;    // set frontPtr default location to $head
+        backPtr = NULL;     // set backPtr to NULL, check is $head is targetValue
         
         
         // move frontPtr forward while finding the target location
         while (frontPtr != NULL && loc <= length && curLoc != loc) {
-            backPtr = frontPtr;
-            frontPtr = frontPtr->next;
+            backPtr = frontPtr;         // save old position, in case frontPtr exceeds list
+            frontPtr = frontPtr->next;  // move frontPtr to next cell
             curLoc++;                   // increment the counter to track Node #
         }
         
@@ -220,42 +223,47 @@ void RetrieveByLocation(const NodePtr &head,const int &loc, const int &length) {
     }
 }
 
+// Find a $targetLocation in the LList
+// Once found, print a header and all remaining $items in the LList
+// use "->" to separate items.
 void PrintLocation(const NodePtr &head,const int &loc,const int &length) {
 
-    NodePtr prevPtr, curPtr;
-    int finder = 1;
+    NodePtr frontPtr, backPtr;    // NodePtrs to travel list or check for targetValue
+    int curLoc = 1;             // current location in Node #s
     
+    // if LList is empty, print ERROR
     if (head == NULL) {
         cerr << "This list is empty.\n";
     
-    
     } else {
-        curPtr = head;
-        prevPtr = NULL;
+        frontPtr = head;  // set firs
+        backPtr = NULL;
         
         // find the location to start printing from
-        while(curPtr != NULL && loc <= length && finder != loc) {
-            prevPtr = curPtr;
-            curPtr = curPtr->next;
-            finder++;
+        while(frontPtr != NULL && loc <= length && curLoc != loc) {
+            backPtr = frontPtr;         // set backPtr to old Ptr location
+            frontPtr = frontPtr->next;  // move frontPtr ahead by 1-cell
+            curLoc++;       // increament Node #
         }
         
-        //starting printing items
+        // print header
         cout << "The list is : ";
         
-            while(curPtr != NULL) {
-                cout << curPtr->data;
-                curPtr = curPtr->next;
+            // print remaining items in list
+            while(frontPtr != NULL) {
+                cout << frontPtr->data;     // print item in list
+                frontPtr = frontPtr->next;  //keep traveling to end of LList
                 
-                // print "->" while there are more items to print.
-                if (curPtr != NULL)
+                // print "->" while there ARE more $items to print.
+                if (frontPtr != NULL)
                     cout << "->";
             }
     }
-    cout << endl;
+    cout << endl;       // new line for readability
 }
 
-void SeekAndDestroyList(NodePtr &head) {
+// Destry the LList and release memory back to system
+void DestroyList(NodePtr &head) {
 
     NodePtr delPtr; // holds onto Node pre-deletion
     
@@ -272,12 +280,16 @@ void SeekAndDestroyList(NodePtr &head) {
     head = NULL;            // set old memory to NULL
 }
 
-// DEBUGGING function
+// DEBUGGING function - LEGACY
+// Confirms/Debugs current LList items/order
 void PrintList(NodePtr &head) {
-    NodePtr cur = head;
-    cout << "The list is: ";
+    NodePtr cur = head;     // create new pointer for travling the LList
+    
+    cout << "The list is: ";    // header
+    
+    // while there are valid Nodes in the list, travel through them
     while(cur != NULL) {
-        cout << cur->data << " -> ";
-        cur = cur->next;
+        cout << cur->data << " -> ";    // print $cur data
+        cur = cur->next;                // move $cur on to the next cell
     }
 }
