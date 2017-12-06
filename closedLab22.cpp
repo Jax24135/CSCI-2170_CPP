@@ -16,19 +16,17 @@ int main() {
     myIn.open("names.dat");
     assert(myIn);
     
-    while(getline(myIn,name) {
+    while(getline(myIn,name)) {
         oriStack.push(name);
-        //revStack.push(oriStack.top());
-        //cout << oriStack.top();
+        revStack.push(oriStack.top());
     }
     
     myIn.close();
     
-    /*
-    while (!revStack.empty()) {
-        cout << revStack.pop();
+    while (!oriStack.empty()) {
+        cout << oriStack.top() << endl;
+        oriStack.pop();
     }
-    */
-    s
+    
     return 0;
 }
