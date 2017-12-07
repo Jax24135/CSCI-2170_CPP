@@ -42,7 +42,7 @@ int main() {
     char command;   // operation to implement in program run
     string fruit;   // holds new fruit names
     int loc;        // location manipulation value
-    int length = 1; // length of the LList
+    int length = 0; // length of the LList
     
     NodePtr head = NULL;    // establish LList $head as declared NULL
     
@@ -58,11 +58,7 @@ int main() {
         // do +1 to length
         if (command == 'I') {
             myIn >> fruit >> loc;
-            if (loc > length || loc < 1) {
-                cerr << "Invalid item location value: " << loc << ".\n\n";
-            } else {
                 InsertByLocation(head, fruit, loc, length);
-            }
         
         // if 'D' - delete item from list
         // do -1 from length
@@ -98,7 +94,7 @@ int main() {
 void InsertByLocation(NodePtr &head, const ItemType &fruit,const int &loc, int &length) {
     
     NodePtr curPtr, prevPtr;    // setup 2 points for finding InsertionPt
-    int currLoc = 1;            // set curPos to 1 since SOMETHING will be the ListHEAD after this
+    int currLoc = 1;            // set curPos to 1 since this list with a position of 1
     
     NodePtr newNode = new Node; // create new Node to INSERT
     newNode->data = fruit;      // assign $fruite to data-cell
@@ -110,13 +106,18 @@ void InsertByLocation(NodePtr &head, const ItemType &fruit,const int &loc, int &
     
     //otherwise, Insert newNode somewhere in the list
     } else {
+        
+        if (loc > length+1) {
+            cerr << "Invalid insertion location.\n";
+            return;
+        
+        } else {
             curPtr = head;      // reset curPtr to the ListHead
             prevPtr = NULL;     // reset to default placement
-            ++length;
         
             // while the end of list isn't reached && loc doesn't match current cell
             // traverse the list
-            while(curPtr != NULL && loc != currLoc) {
+            while(curPtr != NULL && loc <= length+1 && loc != currLoc) {
                 prevPtr = curPtr;
                 curPtr = curPtr->next;
                 currLoc++;  // add 1 to keep track of which cell we're in
@@ -139,8 +140,8 @@ void InsertByLocation(NodePtr &head, const ItemType &fruit,const int &loc, int &
                 prevPtr->next = newNode;
                 newNode->next = curPtr;
             }
+        }
     }
-
     length++; // +1 to $length last
 }
 
@@ -162,7 +163,7 @@ void DeleteByLocation(NodePtr &head, const int &loc, int &length) {
         backPtr = NULL;     // set backPtr to catch if head is intended deletion
         
         // while the end of LList isn't reached, keep moving through it
-        while (frontPtr != NULL && loc <= length && curLoc != loc) {
+        while (frontPtr != NULL && loc <= length+1 && curLoc != loc) {
             backPtr = frontPtr;
             frontPtr = frontPtr->next;
             curLoc++;   // add +1 to counter to keep track of current Node #
@@ -262,7 +263,7 @@ void PrintLocation(const NodePtr &head,const int &loc,const int &length) {
     cout << endl;       // new line for readability
 }
 
-// Destry the LList and release memory back to system
+// Destroy the LList and release memory back to system
 void DestroyList(NodePtr &head) {
 
     NodePtr delPtr; // holds onto Node pre-deletion
@@ -292,4 +293,5 @@ void PrintList(NodePtr &head) {
         cout << cur->data << " -> ";    // print $cur data
         cur = cur->next;                // move $cur on to the next cell
     }
+    cout << endl;
 }
